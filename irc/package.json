@@ -1,0 +1,23 @@
+{
+  "name": "meteor-irc",
+  "version": "0.0.1",
+  "author": "Bjorn Tipling <bjorn@ambientchill.com>",
+  "description": "The irc client for meteor-irc",
+  "contributors": [
+    {
+      "name": "Bjorn Tipling"
+    }
+  ],
+  "scripts": {
+    "start": "node ./bot.js"
+  },
+  "dependencies": {
+    "node-irc":  "*",
+    "meteor-ejson":  "0.6.3",
+    "underscore": ">=1.4"
+  },
+  "license": "Apache",
+  "engines": {
+    "node": ">=0.10"
+  }
+}
