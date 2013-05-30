@@ -13,10 +13,18 @@
 <template name="secretForm">
   {{#if isMissingSecret}}
     <form class="navbar-form pull-left">
-      <input type="text" class="secret-input"/>
+      <label>Secret:
+        <input type="text" class="secret-input"/>
+      </label>
+      <label>Channel:
+        <input type="text" class="channel-input"/>
+      </label>
+      <label>Bot nick:
+        <input type="text" class="nick-input"/>
+      </label>
       <input type="submit" value="Submit secret"/>
     </form>
   {{else}}
-  <p>Has secret!</p>
+  <p>Has config!</p>
   {{/if}}
 </template>

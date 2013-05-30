@@ -1,18 +1,8 @@
+
+
 /**
- * @constructor
+ * @fileOverview The main entry point for the app.
  */
-Secret = new Meteor.Collection('secret');
-Secret.allow({
-  insert: function() {
-    return true;
-  },
-  update: function() {
-    return false;
-  },
-  remove: function() {
-    return false;
-  }
-});
 
 if (Meteor.isClient) {
 
@@ -24,7 +14,7 @@ if (Meteor.isClient) {
    * @return {boolean}
    */
   Template.secretForm.isMissingSecret = function() {
-    var hasSecret = Secret.findOne({hasSecret: true});
+    var hasSecret = Config.findOne({hasSecret: true});
     return !hasSecret;
   };
 
@@ -33,12 +23,16 @@ if (Meteor.isClient) {
      * @param {Object} event
      */
     'submit form' : function(event) {
-      var secret;
+      var secret, channel, nick;
       event.preventDefault();
       secret = $('.secret-input').val();
-      Secret.insert({
+      channel = $('.channel-input').val();
+      nick = $('.nick-input').val();
+      Config.insert({
         hasSecret: true,
-        secret: secret
+        secret: secret,
+        channel: channel,
+        nick: nick
       });
     }
   });
@@ -49,6 +43,26 @@ if (Meteor.isServer) {
     console.log('Starting');
   });
   Meteor.publish('secret', function() {
-    return Secret.find({}, {fields: {secret: 0}});
+    return Config.find({}, {fields: {secret: 0}});
+  });
+  Meteor.methods({
+    ircMessage: function(secret, from, to, message) {
+      var config;
+      if (config = getConfig(secret)) {
+        handleIrcMessage(config, from, to, message);
+      }
+    },
+    ircJoin: function(secret, channel, nick) {
+      var config;
+      if (config = getConfig(secret)) {
+        handleIrcJoin(config, channel, nick);
+      }
+    },
+    ircNames: function(secret, channel, names) {
+      var config;
+      if (config = getConfig(secret)) {
+        handleIrcNames(config, channel, names);
+      }
+    }
   });
 }

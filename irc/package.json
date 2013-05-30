@@ -14,6 +14,7 @@
   "dependencies": {
     "irc":  "*",
     "meteor-ejson":  "0.6.3",
+    "sockjs-client-ws": ">=0.1",
     "underscore": ">=1.4"
   },
   "license": "Apache",
