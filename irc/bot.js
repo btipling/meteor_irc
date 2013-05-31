@@ -1,10 +1,12 @@
+
 (function() {
 
-  var irc, ircClient, sjClient, config, channel, nick, secret, sjsc,
-    uniqueId, connectedToSock, _, LIST_FETCH_INTERVAL;
+  var irc, ircClient, config, channel, nick, secret, _,
+  LIST_FETCH_INTERVAL, RECONNECT_WAIT, DDPClient, ddpclient,
+  ddpConnected;
 
   irc = require('irc');
-  sjsc = require('sockjs-client-ws');
+  DDPClient = require('ddp');
   _ = require('underscore');
   // Used to authenticate the IRC bot with the website;
   config = require('./meteor_irc_secret');
@@ -21,12 +23,14 @@
 
   /**
    * @type {number}
+   * @const
    */
-  uniqueId = 0;
+  RECONNECT_WAIT = 10 * 1000;
+
   /**
    * @type {boolean}
    */
-  connectedToSock = false;
+  ddpConnected = false;
 
   ircClient = new irc.Client('irc.freenode.net', nick, {
     channels: [channel],
@@ -37,11 +41,7 @@
 
   ircClient.addListener('message', function(from, to, message) {
     console.log(from + ' => ' + to + ': ' + message);
-    send({
-      msg: 'method',
-      method: 'ircMessage',
-      params: [from, to, message]
-    });
+    send('ircMessage', [from, to, message]);
   });
 
   ircClient.addListener('join', function(channel, nick) {
@@ -49,64 +49,63 @@
     if (nick === config.nick) {
       getList();
     }
-    send({
-      msg: 'method',
-      method: 'ircJoin',
-      params: [channel, nick]
-    });
+    send('ircJoin', [channel, nick]);
   });
 
   ircClient.addListener('names', function(channel, nicks) {
-    send({
-      msg: 'method',
-      method: 'ircNames',
-      params: [channel, nicks]
-    });
+    send('ircNames', [channel, nicks]);
   });
 
   ircClient.addListener('error', function() {
     console.log('Got an irc error!', arguments);
   });
 
-  sjClient = sjsc.create('http://localhost:3000/sockjs');
-  sjClient.on('connection', function() {
-    console.log('connection', arguments);
-    if (!connectedToSock) {
-      send({
-        msg: 'connect',
-        version: 'pre1',
-        support: 'websocket'
+
+  function connectToMeteor() {
+    if (!ddpclient) {
+      console.log('Connecting to Meteor.');
+      ddpclient = new DDPClient({
+        host: 'localhost',
+        port: 3000
       });
     }
-  });
-  sjClient.on('error', function() {
-    console.log('Got a sockjs error!', arguments);
-  });
-  sjClient.on('data', function(msg) {
-    console.log('data', arguments);
-  });
-  sjClient.on('error', function(e) {
-    console.log('error', arguments);
-  });
+    ddpclient.connect(function(error) {
+      if (error) {
+        console.log('Error connecting to Meteor: ', error);
+      }
+      console.log('Connected to Meteor!');
+      ddpConnected = true;
+    });
+    ddpclient.on('socket-closed', function() {
+      console.log('socket closed', arguments);
+      ddpConnected = false;
+    });
+    ddpclient.on('socket-error', function() {
+      console.log('socket error', arguments);
+    });
+  }
+
+  connectToMeteor();
+
+
 
   /**
-   * @param {Object} data
+   * @param {string} methodName
+   * @param {Array} args
    */
-  function send(data) {
-    var msg;
-    uniqueId++;
-    if (data.msg === 'method') {
-      data.params.unshift(secret);
-    }
-    data.id = 'meteor_irc_' + uniqueId.toString();
-    msg = JSON.stringify(data);
-    if (sjClient) {
-      try {
-        console.log('writing message!', msg);
-        sjClient.write(msg);
-      } catch (e) {
-        console.log('Write error', e);
-      }
+  function send(method, args) {
+    if (ddpclient && ddpConnected) {
+      console.log('Sending a message to meteor!', method, args);
+      args.unshift(secret);
+      ddpclient.call(method, args, function(err, result) {
+        if (err) {
+          return console.log('Got an error from meteor', err);
+        }
+        console.log('Method response success.');
+        if (!_.isUndefined(result)) {
+          console.log('Meteor call result:', result);
+        }
+      });
     }
   }
 
