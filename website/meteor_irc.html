@@ -8,6 +8,7 @@
       {{> secretForm}}
     </div>
   </div>
+  {{> dashboard}}
 </body>
 
 <template name="secretForm">
@@ -24,7 +25,10 @@
       </label>
       <input type="submit" value="Submit secret"/>
     </form>
-  {{else}}
-  <p>Has config!</p>
   {{/if}}
+</template>
+
+<template name="dashboard">
+  The dashboard.
+  {{namesCount}}
 </template>
