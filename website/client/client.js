@@ -129,6 +129,16 @@ function drawLine(data, svg) {
     })
   yAxis = d3.svg.axis()
     .scale(y)
+    .ticks(4)
+    .tickSubdivide(0)
+    .tickFormat(function(value) {
+      var floored;
+      floored = Math.round(value);
+      if (floored !== value) {
+        return;
+      }
+      return value;
+    })
     .orient('left');
   xAxis = d3.svg.axis()
     .scale(x)
