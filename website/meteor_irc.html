@@ -31,4 +31,38 @@
 <template name="dashboard">
   The dashboard.
   {{namesCount}}
+  <h3>Recent messages</h3>
+  {{{recentMessages}}}
+  <h3>Top active</h3>
+  {{{topAactive}}}
+  <h3>Online</h3>
+  {{{online}}}
+</template>
+
+<template name="list">
+  <ul class="list">
+    {{#each this}}
+      <li>
+        <span class="nick">&lt;{{nick}}&gt;<span>
+        <span class="message">{{message}}</span>
+      </li>
+    {{/each}}
+  </ul>
+</template>
+
+<template name="leaderboard">
+  <ul class="leaderboard">
+    {{#each this}}
+      <li>
+        <span class="count">{{count}}</span>
+        <span class="nick">&lt;{{nick}}&gt;<span>
+      </li>
+    {{/each}}
+  </ul>
+</template>
+
+<template name="linechart">
+  <div class="linechart-container">
+    <svg data-id="{{id}}" class="linechart"></svg>
+  </div>
 </template>
