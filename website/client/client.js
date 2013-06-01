@@ -47,37 +47,62 @@ Template.secretForm.events({
   }
 });
 
-Template.dashboard.namesCount = function() {
+Template.dashboard.onlineCount = function() {
   var names;
   names = Names.find({}, {sort: {ts: -1}, limit: 1}).fetch();
   if (_.isEmpty(names)) {
     return 0;
   }
-  return names[0].names.length;
+  return Template.number(names[0].names.length);
+};
+
+
+Template.dashboard.messagesToday = function() {
+  var messages, now;
+  now = new Date();
+  now.setHours(0);
+  now.setMinutes(0);
+  now.setSeconds(0);
+  messages = Messages.find({ts: {$gte: now.getTime()}});
+  return Template.number(messages.count());
 };
 
 Template.dashboard.recentMessages = function() {
-  var messages;
+  var messages, formatted;
   messages = Messages.find({}, {sort: {ts:-1}, limit: 20});
-  return Template.list(messages);
+  formatted = [];
+  messages.forEach(function(m) {
+    formatted.push({
+      nick: m.nick,
+      message: m.message,
+      date: formatDate(m.ts)
+    });
+  });
+  formatted.reverse();
+  return Template.list(formatted);
 };
 
 /**
  * @param {Object.<string, number>}
+ * @param {boolean=} opt_isURL
  * @return {Array.<Object>}
  */
-function getLeaderBoardFromMap(map) {
+function getLeaderBoardFromMap(map, opt_isURL) {
   var results;
   results = _.map(map, function(count, name) {
-    return {name: name, count: count};
+    return {
+      isURL: !!opt_isURL,
+      name: name,
+      count: count
+    };
   });
   results = _.sortBy(results, function(person) {
     return person.count * -1;
   });
-  return Template.leaderboard(results);
+  return Template.leaderboard(results.slice(0, 20));
 };
 
-Template.dashboard.topAactive = function() {
+Template.dashboard.topActive = function() {
   var messages, countMap;
   messages = Messages.find({});
   countMap = {};
@@ -181,7 +206,7 @@ Template.dashboard.topURLs = function() {
       URLs[url] += 1;
     });
   });
-  return getLeaderBoardFromMap(URLs);
+  return getLeaderBoardFromMap(URLs, true);
 };
 
 /**
@@ -245,6 +270,49 @@ function drawLine(data, svg) {
     .style('stroke', '#00f')
     .style('stroke-width', '1px')
     .style('fill', 'none');
+}
 
+/**
+ * @param {number} num
+ * @return {string}
+ */
+function min2(num) {
+  var s;
+  s = num.toString();
+  if (s.length < 2) {
+    s = '0' + s;
+  }
+  return s;
+}
 
+/**
+ * @param {number} ts
+ * @return {string}
+ */
+function formatDate(ts) {
+  var d, months;
+  months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+  d = new Date(ts);
+  return [
+    months[d.getMonth()],
+    ' ',
+    min2(d.getDate()),
+    ' ',
+    min2(d.getHours()),
+    ':',
+    min2(d.getMinutes())
+  ].join('');
 }

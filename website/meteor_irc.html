@@ -29,16 +29,18 @@
 </template>
 
 <template name="dashboard">
-  The dashboard.
-  {{namesCount}}
   <h3>Recent messages</h3>
   {{{recentMessages}}}
   <h3>Top active</h3>
-  {{{topAactive}}}
+  {{{topActive}}}
   <h3>Top URLs</h3>
   {{{topURLs}}}
   <h3>Online</h3>
+  {{{onlineCount}}}
+  <h3>Online</h3>
   {{{online}}}
+  <h3>Messages today</h3>
+  {{{messagesToday}}}
   <h3>Messages per hour</h3>
   {{{messagesPerHour}}}
   <h3>Messages per day</h3>
@@ -49,6 +51,7 @@
   <ul class="list">
     {{#each this}}
       <li>
+        <span class="date">{{date}}<span>
         <span class="nick">&lt;{{nick}}&gt;<span>
         <span class="message">{{message}}</span>
       </li>
@@ -61,10 +64,20 @@
     {{#each this}}
       <li>
         <span class="count">{{count}}</span>
+        {{#if isURL}}
+        <a target="_blank" href="{{name}}" class="name">{{name}}</a>
+        {{else}}
         <span class="name">{{name}}<span>
+        {{/if}}
       </li>
     {{/each}}
   </ul>
+</template>
+
+<template name="number">
+  <div class="number">
+    {{this}}
+  </div>
 </template>
 
 <template name="linechart">
