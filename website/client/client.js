@@ -115,7 +115,7 @@ Template.dashboard.online = function() {
  * @param {number} interval
  */
 function getMessagesPerInterval(interval) {
-  var messages, data, currentTime, currentCount, i;
+  var messages, data, currentTime, currentCount, i, currentDate;
   now = new Date().getTime();
   data = [];
   messages = Messages.find({}, {sort: {ts: 1}}).fetch();
@@ -123,7 +123,11 @@ function getMessagesPerInterval(interval) {
     return [];
   }
   message = messages[0];
-  currentTime = message.ts;
+  currentDate = new Date(message.ts);
+  currentDate.setHours(0);
+  currentDate.setMinutes(0);
+  currentDate.setSeconds(0);
+  currentTime = currentDate.getTime();
   i = 0;
   while(currentTime < now) {
     currentCount = 0;
@@ -147,7 +151,6 @@ function getMessagesPerInterval(interval) {
     });
     currentTime += interval;
   }
-  console.log('data', data);
   return data;
 }
 
@@ -169,7 +172,6 @@ Template.dashboard.topURLs = function() {
     var words, urls
     words = m.message.split(' ');
     urls = _.filter(words, function(word) {
-      console.log('word', word);
       return URL_REGEXP.test(word);
     });
     _.each(urls, function(url) {
@@ -179,7 +181,6 @@ Template.dashboard.topURLs = function() {
       URLs[url] += 1;
     });
   });
-  console.log('urls', URLs);
   return getLeaderBoardFromMap(URLs);
 };
 
