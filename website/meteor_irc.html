@@ -35,8 +35,14 @@
   {{{recentMessages}}}
   <h3>Top active</h3>
   {{{topAactive}}}
+  <h3>Top URLs</h3>
+  {{{topURLs}}}
   <h3>Online</h3>
   {{{online}}}
+  <h3>Messages per hour</h3>
+  {{{messagesPerHour}}}
+  <h3>Messages per day</h3>
+  {{{messagesPerDay}}}
 </template>
 
 <template name="list">
@@ -55,7 +61,7 @@
     {{#each this}}
       <li>
         <span class="count">{{count}}</span>
-        <span class="nick">&lt;{{nick}}&gt;<span>
+        <span class="name">{{name}}<span>
       </li>
     {{/each}}
   </ul>
