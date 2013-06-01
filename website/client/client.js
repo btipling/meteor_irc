@@ -215,7 +215,7 @@ Template.dashboard.topURLs = function() {
  */
 function drawLine(data, svg) {
   var e, width, height, line, xValues, yValues, yAxis, xAxis;
-  width = 300;
+  width = 550;
   height = 100;
   e = d3.select(svg)
     .attr('width', width)

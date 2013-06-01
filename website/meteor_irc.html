@@ -29,22 +29,60 @@
 </template>
 
 <template name="dashboard">
-  <h3>Recent messages</h3>
-  {{{recentMessages}}}
-  <h3>Top active</h3>
-  {{{topActive}}}
-  <h3>Top URLs</h3>
-  {{{topURLs}}}
-  <h3>Online</h3>
-  {{{onlineCount}}}
-  <h3>Online</h3>
-  {{{online}}}
-  <h3>Messages today</h3>
-  {{{messagesToday}}}
-  <h3>Messages per hour</h3>
-  {{{messagesPerHour}}}
-  <h3>Messages per day</h3>
-  {{{messagesPerDay}}}
+  <div class="container">
+    <div class="row">
+      <div class="span2">
+        <div class="row">
+          <div class="span2">
+            <h4>Online</h4>
+            {{{onlineCount}}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2">
+            <h4>Messages today</h4>
+            {{{messagesToday}}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2">
+            <h4>Top active</h4>
+            {{{topActive}}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2">
+            <h4>Top URLs</h4>
+            {{{topURLs}}}
+          </div>
+        </div>
+      </div>
+      <div class="span6">
+        <div class="row">
+          <div class="span6">
+            <h4>Online</h4>
+            {{{online}}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="span6">
+            <h4>Messages per day</h4>
+            {{{messagesPerDay}}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="span6">
+            <h4>Messages per hour</h4>
+            {{{messagesPerHour}}}
+          </div>
+        </div>
+      </div>
+      <div class="span4">
+        <h4>Recent messages</h4>
+        {{{recentMessages}}}
+      </div>
+    </div>
+  </div>
 </template>
 
 <template name="list">
