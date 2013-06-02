@@ -65,8 +65,8 @@
     if (!ddpclient) {
       console.log('Connecting to Meteor.');
       ddpclient = new DDPClient({
-        host: 'localhost',
-        port: 3000
+        host: config.host,
+        port: config.port
       });
     }
     ddpclient.connect(function(error) {
