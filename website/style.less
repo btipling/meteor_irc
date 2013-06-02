@@ -1,12 +1,128 @@
+@black: #222;
+@superdarkgray: #232323;
+@superblack: #000;
+@white: #FFF;
+@whiteShine: #BBB;
+@lightGray: #AAA;
+@darkGray: #555;
+@blue: #00BDFF;
+@orange: #FFA000;
+.bg-gradient (@direction, @directionb, @color1, @length1, @color2, @length2) {
+  background: @color2;
+  background-color: @color2;
+  background-image: -moz-linear-gradient(@direction, @color1 @length1, @color2 @length2);
+  background-image: -ms-linear-gradient(@direction, @color1 @length1, @color2 @length2);
+  background-image: -o-linear-gradient(@direction, @color1 @length1, @color2 @length2);
+  background-image: -webkit-linear-gradient(@direction, @color1 @length1, @color2 @length2);
+  background-image: linear-gradient(@directionb, @color1 , @color2 @length2);
+}
+.border-radius (@length1, @length2) {
+  -webkit-border-radius: @length1 @length2;
+  -ms-border-radius: @length1 @length2;
+  -moz-border-radius: @length1 @length2;
+  border-radius: @length1 @length2;
+}
+html {
+  background: @superblack;
+}
+body {
+  padding-top: 10px;
+  background: @superblack;
+  .bg-gradient(bottom, to top, @superblack, 10%, @black, 95%);
+  background-repeat: no-repeat;
+  color: @white;
+}
+.container {
+  padding-top: 10px;
+}
+a {
+  color: @blue;
+}
+h4 {
+  padding: 0px;
+  margin: 0 0 10px;
+  font-weight: normal;
+  font-size: 18px;
+  color: @white;
+  text-shadow: 0px 1px 1px @superblack;
+}
+.number {
+  color: @blue;
+  font-size: 30px;
+  text-align: center;
+  padding: 10px 0;
+}
 svg {
-  height: 125px;
-  width: 600px;
-  padding: 30px;
   font-size: 11px;
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+  .axis {
+    text {
+      fill: @lightGray;
+    }
+    path, line {
+      fill: none;
+      stroke: @lightGray;
+      shape-rendering: crispEdges;
+    }
   }
+  .linepath {
+    stroke: @blue;
+    stroke-width: 2px;
+    fill: none;
+  }
+}
+ul.leaderboard {
+  padding: 0px;
+  margin: 0px;
+  li {
+   list-style: none;
+   display: block;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+   overflow: hidden;
+   .name {
+      color: @blue;
+    }
+  }
+}
+ul.list {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 650px;
+  padding: 0px;
+  margin: 0px;
+  font-size: 12px;
+  padding-right: 10px;
+  li {
+    list-style: none;
+    padding: 5px;
+    .date {
+      font-size: 11px;
+      color: @lightGray;
+    }
+   .nick {
+      color: @blue;
+    }
+    .message {
+      display: block;
+      white-space: pre-wrap;
+      padding-right: 5px;
+      overflow: hidden;
+    }
+  }
+}
+.widget {
+  .bg-gradient(top, to bottom, @darkGray, 10px, @black, 40px);
+  .border-radius(10px, 10px);
+  border: 1px solid @superblack;
+  border-top-color: @lightGray;
+  border-left-color: @darkGray;
+}
+.widget, .channel-info {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.channel-info {
+  font-size: 18px;
+  text-align: center;
+  color: @orange;
 }

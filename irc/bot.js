@@ -19,7 +19,7 @@
    * @type {number}
    * @const
    */
-  LIST_FETCH_INTERVAL = 1 * 60 * 1000;
+  LIST_FETCH_INTERVAL = 10 * 60 * 1000;
 
   /**
    * @type {number}

@@ -2,7 +2,28 @@
  * fileOverview Client code etc.
  */
 
-var dataMap, URL_REGEXP, QUERY_URL_REGEXP;
+var dataMap, URL_REGEXP, QUERY_URL_REGEXP, isFirefox, isSafari;
+
+isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+isSafari = false;
+if (navigator.userAgent.indexOf('Safari') != -1 &&
+      navigator.userAgent.indexOf('Chrome') == -1) {
+  isSafari = true;
+}
+
+if (isSafari) {
+  // Severe performance problems.
+  Meteor.subscribe('secret', 100);
+  Meteor.subscribe('recentjoins', 100);
+  Meteor.subscribe('recentmessages', 100);
+  Meteor.subscribe('recentnames', 100);
+} else {
+  Meteor.subscribe('secret', 5000);
+  Meteor.subscribe('recentjoins', 5000);
+  Meteor.subscribe('recentmessages', 5000);
+  Meteor.subscribe('recentnames', 5000);
+}
+
 
 /**
  * Map for canvas data.
@@ -20,32 +41,42 @@ URL_REGEXP = /^https?:\/\//
  */
 QUERY_URL_REGEXP = /^.*https?:\/\//
 
-/**
- * @return {boolean}
- */
-Template.secretForm.isMissingSecret = function() {
-  var hasSecret = Config.findOne({hasSecret: true});
-  return !hasSecret;
-};
-
-Template.secretForm.events({
+Meteor.startup(function() {
   /**
-   * @param {Object} event
+   * @return {boolean}
    */
-  'submit form' : function(event) {
-    var secret, channel, nick;
-    event.preventDefault();
-    secret = $('.secret-input').val();
-    channel = $('.channel-input').val();
-    nick = $('.nick-input').val();
-    Config.insert({
-      hasSecret: true,
-      secret: secret,
-      channel: channel,
-      nick: nick
-    });
-  }
+  Template.secretForm.isMissingSecret = function() {
+    var hasSecret = Config.findOne({});
+    return !hasSecret;
+  };
+
+  Template.secretForm.events({
+    /**
+     * @param {Object} event
+     */
+    'submit form' : function(event) {
+      var secret, channel, nick;
+      event.preventDefault();
+      secret = $('.secret-input').val();
+      channel = $('.channel-input').val();
+      nick = $('.nick-input').val();
+      Config.insert({
+        hasSecret: true,
+        secret: secret,
+        channel: channel,
+        nick: nick
+      });
+    }
+  });
 });
+
+Template.dashboard.channelName = function() {
+  var config;
+  config = Config.findOne({});
+  if (config) {
+    return config.channel;
+  }
+}
 
 Template.dashboard.onlineCount = function() {
   var names;
@@ -78,7 +109,6 @@ Template.dashboard.recentMessages = function() {
       date: formatDate(m.ts)
     });
   });
-  formatted.reverse();
   return Template.list(formatted);
 };
 
@@ -99,7 +129,7 @@ function getLeaderBoardFromMap(map, opt_isURL) {
   results = _.sortBy(results, function(person) {
     return person.count * -1;
   });
-  return Template.leaderboard(results.slice(0, 20));
+  return Template.leaderboard(results.slice(0, 5));
 };
 
 Template.dashboard.topActive = function() {
@@ -214,14 +244,16 @@ Template.dashboard.topURLs = function() {
  * @param {Element} element
  */
 function drawLine(data, svg) {
-  var e, width, height, line, xValues, yValues, yAxis, xAxis;
-  width = 550;
-  height = 100;
+  var e, width, height, line, xValues, yValues, yAxis, xAxis, margin;
+  $(svg).empty();
+  width = $(svg).parent().width();
+  height = 150;
+  margin = 20;
   e = d3.select(svg)
     .attr('width', width)
     .attr('height', height);
-  x = d3.time.scale().range([0, width]);
-  y = d3.scale.linear().range([height, 0]);
+  x = d3.time.scale().range([margin, width - margin]);
+  y = d3.scale.linear().range([height - margin, margin]);
   xValues = _.map(_.values(data), function(d) {
     return d.ts;
   });
@@ -231,7 +263,6 @@ function drawLine(data, svg) {
   x.domain([d3.min(xValues), d3.max(xValues)]);
   y.domain([d3.min(yValues), d3.max(yValues)]);
   line = d3.svg.line()
-    .interpolate('basis')
     .x(function(d) {
       return x(d.ts);
     })
@@ -256,20 +287,22 @@ function drawLine(data, svg) {
     .orient('bottom')
   e.append('g')
     .attr('class', 'y axis')
+    .attr('transform', 'translate(' + margin + ', 0)')
     .call(yAxis)
     .append('text')
     .attr('transform', 'rotate(-90)')
     .attr('y', 6)
     .attr('dy', '.71em')
-    .style('text-anchor', 'end')
+    .style('text-anchor', 'end');
   e.append('g')
     .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + height + ')')
+    .attr('transform', 'translate(0,' + (height - margin) + ')')
     .call(xAxis);
   e.append('path').attr('d', line(data))
-    .style('stroke', '#00f')
-    .style('stroke-width', '1px')
-    .style('fill', 'none');
+    .attr('class', 'linepath');
+  _.defer(function() {
+    $(window).one('resize', _.bind(drawLine, null, data, svg));
+  });
 }
 
 /**

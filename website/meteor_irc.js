@@ -4,16 +4,7 @@
  * @fileOverview The main entry point for the app.
  */
 
-if (Meteor.isClient) {
 
-  Meteor.startup(function() {
-    Meteor.subscribe('secret', 5000);
-    Meteor.subscribe('recentjoins', 5000);
-    Meteor.subscribe('recentmessages', 5000);
-    Meteor.subscribe('recentnames', 5000);
-  });
-
-}
 
 if (Meteor.isServer) {
   Meteor.methods({

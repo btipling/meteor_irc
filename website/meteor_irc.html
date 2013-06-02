@@ -34,46 +34,67 @@
       <div class="span2">
         <div class="row">
           <div class="span2">
-            <h4>Online</h4>
-            {{{onlineCount}}}
+            <div class="channel-info">
+              {{channelName}}
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="span2">
-            <h4>Messages today</h4>
-            {{{messagesToday}}}
+            <div class="widget">
+              <h4>Online</h4>
+              {{{onlineCount}}}
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="span2">
-            <h4>Top active</h4>
-            {{{topActive}}}
+            <div class="widget">
+              <h4>Messages today</h4>
+              {{{messagesToday}}}
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="span2">
-            <h4>Top URLs</h4>
-            {{{topURLs}}}
+            <div class="widget">
+              <h4>Top active</h4>
+              {{{topActive}}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2">
+            <div class="widget">
+              <h4>Top URLs</h4>
+              {{{topURLs}}}
+            </div>
           </div>
         </div>
       </div>
-      <div class="span6">
+      <div class="span5">
         <div class="row">
-          <div class="span6">
-            <h4>Online</h4>
-            {{{online}}}
+          <div class="span5">
+            <div class="widget">
+              <h4>Online</h4>
+              {{{online}}}
+            </div>
           </div>
         </div>
         <div class="row">
-          <div class="span6">
-            <h4>Messages per day</h4>
-            {{{messagesPerDay}}}
+          <div class="span5">
+            <div class="widget">
+              <h4>Messages per day</h4>
+              {{{messagesPerDay}}}
+            </div>
           </div>
         </div>
         <div class="row">
-          <div class="span6">
-            <h4>Messages per hour</h4>
-            {{{messagesPerHour}}}
+          <div class="span5">
+            <div class="widget">
+              <h4>Messages per hour</h4>
+              {{{messagesPerHour}}}
+            </div>
           </div>
         </div>
       </div>
@@ -88,9 +109,9 @@
 <template name="list">
   <ul class="list">
     {{#each this}}
-      <li>
-        <span class="date">{{date}}<span>
-        <span class="nick">&lt;{{nick}}&gt;<span>
+      <li class="widget">
+        <span class="date">{{date}}</span>
+        <span class="nick">{{nick}}</span>
         <span class="message">{{message}}</span>
       </li>
     {{/each}}
