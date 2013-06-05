@@ -82,7 +82,7 @@ Template.dashboard.onlineCount = function() {
   var names;
   names = Names.find({}, {sort: {ts: -1}, limit: 1}).fetch();
   if (_.isEmpty(names)) {
-    return 0;
+    return Template.number(0);
   }
   return Template.number(names[0].names.length);
 };
