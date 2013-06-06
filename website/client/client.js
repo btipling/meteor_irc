@@ -248,7 +248,7 @@ function drawLine(data, svg) {
   $(svg).empty();
   width = $(svg).parent().width();
   height = 150;
-  margin = 25;
+  margin = 30;
   e = d3.select(svg)
     .attr('width', width)
     .attr('height', height);
