@@ -136,7 +136,6 @@ Template.dashboard.messagesPerHour = function() {
   if (!messagesPerHour) {
     messagesPerHour = {data: []};
   }
-  console.log('messagesPerHour.data', messagesPerHour.data);
   dataMap.messagesPerHour = messagesPerHour.data;
   return Template.linechart({id: 'messagesPerHour'});
 };
@@ -147,7 +146,6 @@ Template.dashboard.messagesPerDay = function() {
   if (!messagesPerDay) {
     messagesPerDay = {data: []};
   }
-  console.log('messagesPerDay.data', messagesPerDay.data);
   dataMap.messagesPerDay = messagesPerDay.data;
   return Template.linechart({id: 'messagesPerDay'});
 };
