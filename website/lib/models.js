@@ -20,10 +20,28 @@ Config.allow({
 });
 
 /**
+ * Used to track URLs
+ * @constructor
+ */
+URLs = new Meteor.Collection('urls');
+
+/**
+ * Used to track nicks
+ * @constructor
+ */
+Nicks = new Meteor.Collection('nicks');
+
+/**
  * Used to track names.
  * @constructor
  */
 Names = new Meteor.Collection('names');
+
+/**
+ * Used to track online.
+ * @constructor
+ */
+Online = new Meteor.Collection('online');
 
 /**
  * Tracking messages.
@@ -32,7 +50,13 @@ Names = new Meteor.Collection('names');
 Messages = new Meteor.Collection('messages');
 
 /**
- * Used to track joins.
+ * Tracking messages per hour.
  * @constructor
  */
-Joins = new Meteor.Collection('joins');
+MessagesPerHour = new Meteor.Collection('messagesPerHour');
+
+/**
+ * Tracking messages per day.
+ * @constructor
+ */
+MessagesPerDay = new Meteor.Collection('messagesPerDay');

@@ -49,7 +49,6 @@
     if (nick === config.nick) {
       getList();
     }
-    send('ircJoin', [channel, nick]);
   });
 
   ircClient.addListener('names', function(channel, nicks) {

@@ -2,28 +2,16 @@
  * fileOverview Client code etc.
  */
 
-var dataMap, URL_REGEXP, QUERY_URL_REGEXP, isFirefox, isSafari;
+var dataMap;
 
-isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-isSafari = false;
-if (navigator.userAgent.indexOf('Safari') != -1 &&
-      navigator.userAgent.indexOf('Chrome') == -1) {
-  isSafari = true;
-}
-
-if (isSafari) {
-  // Severe performance problems.
-  Meteor.subscribe('secret', 100);
-  Meteor.subscribe('recentjoins', 100);
-  Meteor.subscribe('recentmessages', 100);
-  Meteor.subscribe('recentnames', 100);
-} else {
-  Meteor.subscribe('secret', 5000);
-  Meteor.subscribe('recentjoins', 5000);
-  Meteor.subscribe('recentmessages', 5000);
-  Meteor.subscribe('recentnames', 5000);
-}
-
+Meteor.subscribe('secret');
+Meteor.subscribe('messagesPerHourData');
+Meteor.subscribe('messagesPerDayData');
+Meteor.subscribe('onlineData');
+Meteor.subscribe('namesData');
+Meteor.subscribe('topURLsData', 10);
+Meteor.subscribe('topNicksData', 10);
+Meteor.subscribe('recentMessages', 100);
 
 /**
  * Map for canvas data.
@@ -41,33 +29,33 @@ URL_REGEXP = /^https?:\/\//
  */
 QUERY_URL_REGEXP = /^.*https?:\/\//
 
-Meteor.startup(function() {
-  /**
-   * @return {boolean}
-   */
-  Template.secretForm.isMissingSecret = function() {
-    var hasSecret = Config.findOne({});
-    return !hasSecret;
-  };
+/**
+ * @return {boolean}
+ */
+Template.secretForm.isMissingSecret = function() {
+  var hasSecret = Config.findOne({});
+  console.log('hasSecret', hasSecret);
+  return false;
+  //return !hasSecret;
+};
 
-  Template.secretForm.events({
-    /**
-     * @param {Object} event
-     */
-    'submit form' : function(event) {
-      var secret, channel, nick;
-      event.preventDefault();
-      secret = $('.secret-input').val();
-      channel = $('.channel-input').val();
-      nick = $('.nick-input').val();
-      Config.insert({
-        hasSecret: true,
-        secret: secret,
-        channel: channel,
-        nick: nick
-      });
-    }
-  });
+Template.secretForm.events({
+  /**
+   * @param {Object} event
+   */
+  'submit': function(event) {
+    var secret, channel, nick;
+    event.preventDefault();
+    secret = $('.secret-input').val();
+    channel = $('.channel-input').val();
+    nick = $('.nick-input').val();
+    Config.insert({
+      hasSecret: true,
+      secret: secret,
+      channel: channel,
+      nick: nick
+    });
+  }
 });
 
 Template.dashboard.channelName = function() {
@@ -89,13 +77,12 @@ Template.dashboard.onlineCount = function() {
 
 
 Template.dashboard.messagesToday = function() {
-  var messages, now;
-  now = new Date();
-  now.setHours(0);
-  now.setMinutes(0);
-  now.setSeconds(0);
-  messages = Messages.find({ts: {$gte: now.getTime()}});
-  return Template.number(messages.count());
+  var m;
+  m = MessagesPerDay.findOne({});
+  if (!m) {
+    return Template.number(0);
+  }
+  return Template.number(_.last(m.data).count);
 };
 
 Template.dashboard.recentMessages = function() {
@@ -112,37 +99,18 @@ Template.dashboard.recentMessages = function() {
   return Template.list(formatted);
 };
 
-/**
- * @param {Object.<string, number>}
- * @param {boolean=} opt_isURL
- * @return {Array.<Object>}
- */
-function getLeaderBoardFromMap(map, opt_isURL) {
-  var results;
-  results = _.map(map, function(count, name) {
-    return {
-      isURL: !!opt_isURL,
-      name: name,
-      count: count
-    };
-  });
-  results = _.sortBy(results, function(person) {
-    return person.count * -1;
-  });
-  return Template.leaderboard(results.slice(0, 5));
-};
-
 Template.dashboard.topActive = function() {
-  var messages, countMap;
-  messages = Messages.find({});
-  countMap = {};
-  messages.forEach(function(message) {
-    if(!_.has(countMap, message.nick)) {
-      return countMap[message.nick] = 1;
-    }
-    countMap[message.nick] += 1;
+  var nicks, results;
+  nicks = Nicks.find({}, {sort: {count: -1}});
+  results = [];
+  nicks.forEach(function(nick) {
+    results.push({
+      isURL: false,
+      name: nick.nick,
+      count: nick.count
+    });
   });
-  return getLeaderBoardFromMap(countMap);
+  return Template.leaderboard(results);
 };
 
 Template.linechart.rendered = function() {
@@ -153,90 +121,47 @@ Template.linechart.rendered = function() {
 };
 
 Template.dashboard.online = function() {
-  var names, data;
-  names = Names.find({});
-  data = [];
-  names.forEach(function(nameset) {
-    data.push({
-      count: nameset.names.length,
-      ts: nameset.ts
-    });
-  });
-  dataMap.online = data;
+  var online;
+  online = Online.findOne({});
+  if (!online) {
+    online = {data: []};
+  }
+  dataMap.online = online.data;
   return Template.linechart({id: 'online'});
 };
 
-/**
- * @param {number} interval
- */
-function getMessagesPerInterval(interval) {
-  var messages, data, currentTime, currentCount, i, currentDate;
-  now = new Date().getTime();
-  data = [];
-  messages = Messages.find({}, {sort: {ts: 1}}).fetch();
-  if (_.isEmpty(messages)) {
-    return [];
-  }
-  message = messages[0];
-  currentDate = new Date(message.ts);
-  currentDate.setHours(0);
-  currentDate.setMinutes(0);
-  currentDate.setSeconds(0);
-  currentTime = currentDate.getTime();
-  i = 0;
-  while(currentTime < now) {
-    currentCount = 0;
-    if (i >= messages.length) {
-      // No more messages, just add 0 for remaining hours.
-      data.push({count: currentCount, ts: currentTime});
-      currentTime += interval;
-      continue;
-    }
-    while(message.ts < currentTime + interval) {
-      currentCount += 1;
-      i += 1;
-      if (i >= messages.length) {
-        break;
-      }
-      message = messages[i];
-    }
-    data.push({
-      count: currentCount,
-      ts: currentTime
-    });
-    currentTime += interval;
-  }
-  return data;
-}
-
 Template.dashboard.messagesPerHour = function() {
-  dataMap.messagesPerHour = getMessagesPerInterval(60 * 60 * 1000);
+  var messagesPerHour;
+  messagesPerHour = MessagesPerDay.findOne({});
+  if (!messagesPerHour) {
+    messagesPerHour = {data: []};
+  }
+  dataMap.messagesPerHour = messagesPerHour.data;
   return Template.linechart({id: 'messagesPerHour'});
 };
 
 Template.dashboard.messagesPerDay = function() {
-  dataMap.messagesPerDay = getMessagesPerInterval(24 * 60 * 60 * 1000);
+  var messagesPerDay;
+  messagesPerDay = MessagesPerDay.findOne({});
+  if (!messagesPerDay) {
+    messagesPerDay = {data: []};
+  }
+  dataMap.messagesPerDay = messagesPerDay.data;
   return Template.linechart({id: 'messagesPerDay'});
 };
 
 Template.dashboard.topURLs = function() {
-  var messages, URLs;
-  URLs = {};
-  messages = Messages.find({message: {$regex: QUERY_URL_REGEXP}});
-  messages.forEach(function(m) {
-    var words, urls
-    words = m.message.split(' ');
-    urls = _.filter(words, function(word) {
-      return URL_REGEXP.test(word);
-    });
-    _.each(urls, function(url) {
-      if (!_.has(URLs, url)) {
-        return URLs[url] = 1;
-      }
-      URLs[url] += 1;
+  var urls;
+  urls = URLs.find({}, {sort: {count: -1}});
+  results = [];
+  urls.forEach(function(url) {
+    results.push({
+      isURL: true,
+      name: url.url,
+      count: url.count
     });
   });
-  return getLeaderBoardFromMap(URLs, true);
+  return Template.leaderboard(results);
 };
 
 /**
