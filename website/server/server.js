@@ -110,12 +110,9 @@ handleIrcNames = handleIrcNames_;
  * @param {number} ts
  */
 function updateMessagesPerHour(ts) {
-  var d, hourTs, interval;
+  var hourTs, interval;
   interval = 1000 * 60 * 60;
-  d = new Date(ts);
-  d.setMinutes(0);
-  d.setSeconds(0);
-  hourTs = d.getTime();
+  hourTs = Math.floor(ts/3600000) * 3600000;
   updateMessagesPerInterval(ts, hourTs, interval, MessagesPerHour);
 }
 
@@ -123,13 +120,9 @@ function updateMessagesPerHour(ts) {
  * @param {number} ts
  */
 function updateMessagesPerDay(ts) {
-  var d, dayTs, interval;
+  var dayTs, interval;
   interval = 1000 * 60 * 60 * 24;
-  d = new Date(ts);
-  d.setHours(0);
-  d.setMinutes(0);
-  d.setSeconds(0);
-  dayTs = d.getTime();
+  dayTs = Math.floor(ts/86400000) * 86400000;
   updateMessagesPerInterval(ts, dayTs, interval, MessagesPerDay);
 }
 
@@ -146,13 +139,13 @@ function updateMessagesPerInterval(ts, intervalTs, interval, C) {
   if (!doc) {
     // Never saved anything before.
     C.insert({
-      lastTs: ts,
+      lastTs: intervalTs,
       data: [{count: 1, ts: intervalTs}]
     });
     return;
   }
   lastTs = doc.lastTs;
-  doc.lastTs = ts;
+  doc.lastTs = intervalTs;
   if (lastTs === intervalTs) {
     // Message received in same interval as previous.
     _.last(doc.data).count += 1;
