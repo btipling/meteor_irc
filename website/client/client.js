@@ -2,7 +2,7 @@
  * fileOverview Client code etc.
  */
 
-var dataMap;
+var dataMap, URL_REGEXP, QUERY_URL_REGEXP;
 
 Meteor.subscribe('secret');
 Meteor.subscribe('messagesPerHourData');
@@ -34,9 +34,11 @@ QUERY_URL_REGEXP = /^.*https?:\/\//
  */
 Template.secretForm.isMissingSecret = function() {
   var hasSecret = Config.findOne({});
+  if (!SETUP) {
+    return false;
+  }
   console.log('hasSecret', hasSecret);
-  return false;
-  //return !hasSecret;
+  return !hasSecret;
 };
 
 Template.secretForm.events({

@@ -1,6 +1,13 @@
 /**
  * @fileOverview The models for the app.
  */
+
+/**
+ * Whether this is in setup mode.
+ * @type {boolean}
+ */
+SETUP = false;
+
 /**
  * Just a general config with just one item in it.
  * Entered on first setting up.
@@ -9,6 +16,9 @@
 Config = new Meteor.Collection('config');
 Config.allow({
   insert: function() {
+    if (!SETUP) {
+      return false;
+    }
     return true;
   },
   update: function() {
