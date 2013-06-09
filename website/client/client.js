@@ -132,10 +132,11 @@ Template.dashboard.online = function() {
 
 Template.dashboard.messagesPerHour = function() {
   var messagesPerHour;
-  messagesPerHour = MessagesPerDay.findOne({});
+  messagesPerHour = MessagesPerHour.findOne({});
   if (!messagesPerHour) {
     messagesPerHour = {data: []};
   }
+  console.log('messagesPerHour.data', messagesPerHour.data);
   dataMap.messagesPerHour = messagesPerHour.data;
   return Template.linechart({id: 'messagesPerHour'});
 };
@@ -146,6 +147,7 @@ Template.dashboard.messagesPerDay = function() {
   if (!messagesPerDay) {
     messagesPerDay = {data: []};
   }
+  console.log('messagesPerDay.data', messagesPerDay.data);
   dataMap.messagesPerDay = messagesPerDay.data;
   return Template.linechart({id: 'messagesPerDay'});
 };
@@ -169,6 +171,7 @@ Template.dashboard.topURLs = function() {
  * @param {Element} element
  */
 function drawLine(data, svg) {
+  console.log('data', data);
   var e, width, height, line, xValues, yValues, yAxis, xAxis, margin;
   $(svg).empty();
   width = $(svg).parent().width();
