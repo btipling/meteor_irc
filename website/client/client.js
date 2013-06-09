@@ -37,7 +37,6 @@ Template.secretForm.isMissingSecret = function() {
   if (!SETUP) {
     return false;
   }
-  console.log('hasSecret', hasSecret);
   return !hasSecret;
 };
 
@@ -171,7 +170,6 @@ Template.dashboard.topURLs = function() {
  * @param {Element} element
  */
 function drawLine(data, svg) {
-  console.log('data', data);
   var e, width, height, line, xValues, yValues, yAxis, xAxis, margin;
   $(svg).empty();
   width = $(svg).parent().width();
