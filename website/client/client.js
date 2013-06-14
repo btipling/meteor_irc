@@ -88,7 +88,7 @@ Template.dashboard.messagesToday = function() {
 
 Template.dashboard.recentMessages = function() {
   var messages, formatted;
-  messages = Messages.find({}, {sort: {ts:-1}, limit: 20});
+  messages = Messages.find({}, {sort: {ts:-1}, limit: 50});
   formatted = [];
   messages.forEach(function(m) {
     formatted.push({
