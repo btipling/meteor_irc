@@ -9,8 +9,8 @@ Meteor.subscribe('messagesPerHourData');
 Meteor.subscribe('messagesPerDayData');
 Meteor.subscribe('onlineData');
 Meteor.subscribe('namesData');
-Meteor.subscribe('topURLsData', 10);
-Meteor.subscribe('topNicksData', 10);
+Meteor.subscribe('topURLsData', 8);
+Meteor.subscribe('topNicksData', 8);
 Meteor.subscribe('recentMessages', 100);
 
 /**

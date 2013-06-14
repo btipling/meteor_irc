@@ -32,7 +32,7 @@
 <template name="dashboard">
   <div class="container">
     <div class="row">
-      <div class="span2">
+      <div class="span7">
         <div class="row">
           <div class="span2">
             <div class="channel-info">
@@ -42,66 +42,78 @@
         </div>
         <div class="row">
           <div class="span2">
-            <div class="widget">
-              <h4>Online</h4>
-              {{{onlineCount}}}
+            <div class="row">
+              <div class="span2">
+                <div class="widget">
+                  <h4>Online</h4>
+                  {{{onlineCount}}}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="span2">
+                <div class="widget">
+                  <h4>Messages today</h4>
+                  {{{messagesToday}}}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="span2">
+                <div class="widget">
+                  <h4>Top active</h4>
+                  {{{topActive}}}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="span2">
+                <div class="widget">
+                  <h4>Top URLs</h4>
+                  {{{topURLs}}}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="span2">
-            <div class="widget">
-              <h4>Messages today</h4>
-              {{{messagesToday}}}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="span2">
-            <div class="widget">
-              <h4>Top active</h4>
-              {{{topActive}}}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="span2">
-            <div class="widget">
-              <h4>Top URLs</h4>
-              {{{topURLs}}}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="span5">
-        <div class="row">
           <div class="span5">
-            <div class="widget">
-              <h4>Online</h4>
-              {{{online}}}
+            <div class="row">
+              <div class="span5">
+                <div class="widget">
+                  <h4>Online</h4>
+                  {{{online}}}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="span5">
-            <div class="widget">
-              <h4>Messages per day</h4>
-              {{{messagesPerDay}}}
+            <div class="row">
+              <div class="span5">
+                <div class="widget">
+                  <h4>Messages per day</h4>
+                  {{{messagesPerDay}}}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="span5">
-            <div class="widget">
-              <h4>Messages per hour</h4>
-              {{{messagesPerHour}}}
+            <div class="row">
+              <div class="span5">
+                <div class="widget">
+                  <h4>Messages per hour</h4>
+                  {{{messagesPerHour}}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="span4">
-        <h4>Recent messages</h4>
-        {{{recentMessages}}}
+        <div class="row">
+          <div class="span4">
+            <div class="recent">Recent messages</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span4">
+            {{{recentMessages}}}
+          </div>
+        </div>
       </div>
     </div>
   </div>
