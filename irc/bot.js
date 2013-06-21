@@ -33,7 +33,7 @@
   ddpConnected = false;
 
   ircClient = new irc.Client('irc.freenode.net', nick, {
-    channels: [channel],
+    channels: [channel, config.adminChannel],
     autoReJoin: true,
     showErrors: true,
     debug: false
